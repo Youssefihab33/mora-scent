@@ -1,27 +1,120 @@
 import React from 'react';
-const Hero = ({ lang }) => {
-    return (<div className="relative h-[85vh] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0">
-        <img src="https://images.unsplash.com/photo-1557170334-a9632e77c6e4?q=80&w=2000&auto=format&fit=crop" alt="Luxury Perfume Hero" className="w-full h-full object-cover"/>
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
-      </div>
+import { Box, Typography, Button, Container } from '@mui/material';
 
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-        <span className="block text-[#D4AF37] text-lg font-medium mb-4 tracking-[0.2em] uppercase animate-fade-in-up">
-          {lang === 'ar' ? 'عالم Mora scent للفخامة العطرية' : 'Mora scent World of Aromatic Luxury'}
-        </span>
-        <h2 className="text-5xl md:text-7xl font-serif font-bold mb-6 leading-tight animate-fade-in-up">
-          {lang === 'ar' ? (<>حيث تبدأ الذكريات <br /> برائحة لا تُنسى</>) : (<>Where Memories Begin <br /> with an Unforgettable Scent</>)}
-        </h2>
-        <p className="text-lg md:text-xl text-neutral-200 mb-10 max-w-2xl mx-auto font-light animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-          {lang === 'ar'
-            ? 'نقدم لك أرقى تشكيلة من عطور النيش والزيوت العطرية، مختارة بعناية في مصر لتناسب ذوقك الرفيع وتمنحك حضوراً ملكياً.'
-            : 'We offer you the finest collection of niche perfumes and essential oils, carefully selected in Egypt to suit your refined taste.'}
-        </p>
-        <a href="#collection" className="inline-block bg-[#D4AF37] text-black px-10 py-4 font-semibold text-lg hover:bg-white transition-all duration-300 transform hover:-translate-y-1 shadow-lg animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-          {lang === 'ar' ? 'اكتشف المجموعة' : 'Discover Collection'}
-        </a>
-      </div>
-    </div>);
+/**
+ * Hero component migrated to MUI.
+ * Features: Background image with overlay and theme-aware typography.
+ */
+const Hero = ({ lang }) => {
+	return (
+		<Box
+			sx={{
+				position: 'relative',
+				height: '85vh',
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				overflow: 'hidden',
+			}}
+		>
+			{/* Background Image with Overlay */}
+			<Box
+				sx={{
+					position: 'absolute',
+					inset: 0,
+					zIndex: 0,
+					'&::before': {
+						content: '""',
+						position: 'absolute',
+						inset: 0,
+						bgcolor: 'rgba(0,0,0,0.5)',
+						backdropFilter: 'blur(2px)',
+						zIndex: 1,
+					},
+				}}
+			>
+				<Box
+					component='img'
+					src='https://images.unsplash.com/photo-1557170334-a9632e77c6e4?q=80&w=2000&auto=format&fit=crop'
+					alt='Luxury Perfume Hero'
+					sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+				/>
+			</Box>
+
+			{/* Hero Content */}
+			<Container maxWidth='md' sx={{ position: 'relative', zIndex: 1, textAlign: 'center', color: 'white' }}>
+				<Typography
+					variant='overline'
+					sx={{
+						display: 'block',
+						color: 'primary.main',
+						fontSize: '1.125rem',
+						fontWeight: 500,
+						mb: 2,
+						letterSpacing: '0.2em',
+						textTransform: 'uppercase',
+					}}
+				>
+					{lang === 'ar' ? 'عالم Mora scent للفخامة العطرية' : 'Mora scent World of Aromatic Luxury'}
+				</Typography>
+
+				<Typography
+					variant='h2'
+					sx={{
+						fontSize: { xs: '3rem', md: '4.5rem' },
+						fontWeight: 700,
+						mb: 3,
+						lineHeight: 1.2,
+					}}
+				>
+					{lang === 'ar' ? (
+						<>
+							حيث تبدأ الذكريات <br /> برائحة لا تُنسى
+						</>
+					) : (
+						<>
+							Where Memories Begin <br /> with an Unforgettable Scent
+						</>
+					)}
+				</Typography>
+
+				<Typography
+					variant='h6'
+					sx={{
+						maxWidth: '42rem',
+						mx: 'auto',
+						mb: 5,
+						fontWeight: 300,
+						color: 'neutral.200',
+						opacity: 0.9,
+					}}
+				>
+					{lang === 'ar'
+						? 'نقدم لك أرقى تشكيلة من عطور النيش والزيوت العطرية، مختارة بعناية في مصر لتناسب ذوقك الرفيع وتمنحك حضوراً ملكياً.'
+						: 'We offer you the finest collection of niche perfumes and essential oils, carefully selected in Egypt to suit your refined taste.'}
+				</Typography>
+
+				<Button
+					component='a'
+					href='#collection'
+					variant='contained'
+					color='primary'
+					size='large'
+					sx={{
+						px: 5,
+						py: 2,
+						fontSize: '1.125rem',
+						fontWeight: 600,
+						transition: 'all 0.3s ease',
+						transform: 'translateY(0)',
+						'&:hover': { transform: 'translateY(-4px)', bgcolor: 'white', color: 'black' },
+					}}
+				>
+					{lang === 'ar' ? 'اكتشف المجموعة' : 'Discover Collection'}
+				</Button>
+			</Container>
+		</Box>
+	);
 };
+
 export default Hero;

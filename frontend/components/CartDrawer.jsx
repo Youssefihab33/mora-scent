@@ -1,56 +1,146 @@
 import React from 'react';
-import { X, ShoppingBag, Trash2 } from 'lucide-react';
-const CartDrawer = ({ isOpen, onClose, cart, lang, updateQuantity, removeFromCart, total, onCheckout }) => {
-    if (!isOpen)
-        return null;
-    const currency = lang === 'ar' ? 'ج.م' : 'EGP';
-    return (<div className="fixed inset-0 z-[60] flex justify-end">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-slide-in-right">
-        <div className="p-5 border-b flex justify-between items-center bg-[#1a1a1a] text-white">
-          <h2 className="text-xl font-serif font-bold">
-            {lang === 'ar' ? 'سلة التسوق' : 'Shopping Cart'}
-          </h2>
-          <button onClick={onClose}><X /></button>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {cart.length === 0 ? (<div className="text-center py-20 text-neutral-400">
-              <ShoppingBag size={48} className="mx-auto mb-4 opacity-50"/>
-              <p>{lang === 'ar' ? 'السلة فارغة حالياً' : 'Your cart is empty'}</p>
-              <button onClick={onClose} className="mt-4 text-[#D4AF37] underline font-medium">
-                {lang === 'ar' ? 'ابدأ التسوق الآن' : 'Start shopping now'}
-              </button>
-            </div>) : (cart.map(item => (<div key={item.id} className="flex gap-4 bg-neutral-50 p-3 rounded-xl border border-neutral-100 hover:border-[#D4AF37] transition-colors">
-                <img src={item.image} className="w-20 h-20 object-cover rounded-lg" alt={item.name}/>
-                <div className="flex-1">
-                  <h4 className="font-bold text-sm text-neutral-800">
-                    {lang === 'ar' ? item.name : item.nameEn}
-                  </h4>
-                  <div className="text-[#D4AF37] font-bold mt-1">{item.price} {currency}</div>
-                  <div className="flex items-center gap-3 mt-3">
-                    <button onClick={() => updateQuantity(item.id, -1)} className="w-8 h-8 bg-white border border-neutral-200 rounded-lg flex items-center justify-center text-lg hover:bg-[#D4AF37] hover:text-white transition-colors">-</button>
-                    <span className="text-sm font-bold min-w-[20px] text-center">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, 1)} className="w-8 h-8 bg-white border border-neutral-200 rounded-lg flex items-center justify-center text-lg hover:bg-[#D4AF37] hover:text-white transition-colors">+</button>
-                  </div>
-                </div>
-                <button onClick={() => removeFromCart(item.id)} className="text-neutral-400 hover:text-red-500 self-start p-2"><Trash2 size={16}/></button>
-              </div>)))}
-        </div>
+import { Drawer, Box, Typography, IconButton, List, ListItem, ListItemAvatar, ListItemText, Avatar, Button, Divider, Stack, useTheme } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
-        {cart.length > 0 && (<div className="p-5 border-t bg-neutral-50 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-            <div className="flex justify-between mb-4 text-xl font-bold text-neutral-900">
-              <span>{lang === 'ar' ? 'المجموع' : 'Total'}</span>
-              <span>{total} {currency}</span>
-            </div>
-            <button onClick={onCheckout} className="w-full bg-[#D4AF37] text-black py-4 font-bold rounded-xl hover:bg-[#b5952f] transition-all transform active:scale-95 shadow-lg">
-              {lang === 'ar' ? 'إتمام الطلب' : 'Checkout'}
-            </button>
-            <p className="text-center text-xs text-neutral-400 mt-4">
-              {lang === 'ar' ? 'الأسعار شاملة ضريبة القيمة المضافة' : 'Prices include VAT'}
-            </p>
-          </div>)}
-      </div>
-    </div>);
+/**
+ * CartDrawer component migrated to MUI.
+ * Features: Responsive drawer width, item quantity controls, and total calculation display.
+ */
+const CartDrawer = ({ isOpen, onClose, cart, lang, updateQuantity, removeFromCart, total, onCheckout }) => {
+	const theme = useTheme();
+	const currency = lang === 'ar' ? 'ج.م' : 'EGP';
+
+	return (
+		<Drawer
+			anchor={lang === 'ar' ? 'left' : 'right'}
+			open={isOpen}
+			onClose={onClose}
+			PaperProps={{
+				sx: { width: { xs: '100%', sm: 400 }, display: 'flex', flexDirection: 'column' },
+			}}
+		>
+			{/* Drawer Header */}
+			<Box sx={{ p: 2.5, bgcolor: 'secondary.main', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+				<Typography variant='h6' sx={{ fontWeight: 700 }}>
+					{lang === 'ar' ? 'سلة التسوق' : 'Shopping Cart'}
+				</Typography>
+				<IconButton onClick={onClose} sx={{ color: 'white' }}>
+					<CloseIcon />
+				</IconButton>
+			</Box>
+
+			{/* Cart Items List */}
+			<Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
+				{cart.length === 0 ? (
+					<Box sx={{ textAlign: 'center', py: 10, color: 'text.secondary' }}>
+						<ShoppingBagIcon sx={{ fontSize: 64, margin: '0 auto 16px', opacity: 0.2, display: 'block' }} />
+						<Typography variant='h6' gutterBottom>
+							{lang === 'ar' ? 'السلة فارغة حالياً' : 'Your cart is empty'}
+						</Typography>
+						<Button onClick={onClose} sx={{ color: 'primary.main', textTransform: 'none', fontWeight: 600 }}>
+							{lang === 'ar' ? 'ابدأ التسوق الآن' : 'Start shopping now'}
+						</Button>
+					</Box>
+				) : (
+					<List disablePadding>
+						{cart.map((item) => (
+							<ListItem
+								key={item.id}
+								sx={{
+									mb: 2,
+									p: 2,
+									borderRadius: 3,
+									bgcolor: 'background.default',
+									border: 1,
+									borderColor: 'divider',
+									alignItems: 'flex-start',
+									'&:hover': { borderColor: 'primary.main' },
+								}}
+								secondaryAction={
+									<IconButton edge='end' onClick={() => removeFromCart(item.id)} size='small' sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}>
+										<DeleteIcon sx={{ fontSize: 18 }} />
+									</IconButton>
+								}
+							>
+								<ListItemAvatar sx={{ mr: 2 }}>
+									<Avatar variant='rounded' src={item.image} alt={item.name} sx={{ width: 80, height: 80, borderRadius: 2 }} />
+								</ListItemAvatar>
+								<ListItemText
+									primary={
+										<Typography variant='subtitle1' sx={{ fontWeight: 700, mb: 0.5 }}>
+											{lang === 'ar' ? item.name : item.nameEn}
+										</Typography>
+									}
+									secondary={
+										<Box component='span'>
+											<Typography variant='body2' color='primary' sx={{ fontWeight: 800, mb: 1.5 }}>
+												{item.price} {currency}
+											</Typography>
+											<Stack direction='row' alignItems='center' spacing={1.5}>
+												<IconButton
+													size='small'
+													onClick={() => updateQuantity(item.id, -1)}
+													sx={{ border: 1, borderColor: 'divider', borderRadius: 1.5, bgcolor: 'white', '&:hover': { bgcolor: 'primary.main', color: 'white' } }}
+												>
+													<RemoveIcon sx={{ fontSize: 14 }} />
+												</IconButton>
+												<Typography variant='body2' sx={{ fontWeight: 700, minWidth: 20, textAlign: 'center' }}>
+													{item.quantity}
+												</Typography>
+												<IconButton
+													size='small'
+													onClick={() => updateQuantity(item.id, 1)}
+													sx={{ border: 1, borderColor: 'divider', borderRadius: 1.5, bgcolor: 'white', '&:hover': { bgcolor: 'primary.main', color: 'white' } }}
+												>
+													<AddIcon sx={{ fontSize: 14 }} />
+												</IconButton>
+											</Stack>
+										</Box>
+									}
+								/>
+							</ListItem>
+						))}
+					</List>
+				)}
+			</Box>
+
+			{/* Cart Footer / Summary */}
+			{cart.length > 0 && (
+				<Box sx={{ p: 3, borderTop: 1, borderColor: 'divider', bgcolor: 'background.default' }}>
+					<Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ mb: 3 }}>
+						<Typography variant='h5' sx={{ fontWeight: 800 }}>
+							{lang === 'ar' ? 'المجموع' : 'Total'}
+						</Typography>
+						<Typography variant='h5' sx={{ fontWeight: 800, color: 'primary.main' }}>
+							{total} {currency}
+						</Typography>
+					</Stack>
+					<Button
+						fullWidth
+						variant='contained'
+						size='large'
+						onClick={onCheckout}
+						sx={{
+							py: 2,
+							fontSize: '1.125rem',
+							fontWeight: 800,
+							boxShadow: theme.shadows[4],
+							'&:hover': { bgcolor: 'primary.dark' },
+						}}
+					>
+						{lang === 'ar' ? 'إتمام الطلب' : 'Checkout'}
+					</Button>
+					<Typography variant='caption' align='center' display='block' sx={{ mt: 2, color: 'text.secondary' }}>
+						{lang === 'ar' ? 'الأسعار شاملة ضريبة القيمة المضافة' : 'Prices include VAT'}
+					</Typography>
+				</Box>
+			)}
+		</Drawer>
+	);
 };
+
 export default CartDrawer;
