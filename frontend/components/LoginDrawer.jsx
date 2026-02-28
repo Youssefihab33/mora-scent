@@ -1,125 +1,211 @@
 import React, { useState } from 'react';
-import { X, LogIn, User as UserIcon, Mail, Lock, Bell, Package, CheckCircle2 } from 'lucide-react';
+import { Drawer, Box, Typography, IconButton, Avatar, Button, TextField, InputAdornment, Stack, Divider, Paper, List, ListItem, ListItemText } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import LoginIcon from '@mui/icons-material/Login';
+import PersonIcon from '@mui/icons-material/Person';
+import MailIcon from '@mui/icons-material/Mail';
+import LockIcon from '@mui/icons-material/Lock';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+/**
+ * LoginDrawer component migrated to MUI.
+ * Handles both authentication (Login/Register) and user profile view (Order history).
+ */
 const LoginDrawer = ({ isOpen, onClose, lang, user, onLogin, onLogout, orders }) => {
-    const [isRegister, setIsRegister] = useState(false);
-    const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-    if (!isOpen)
-        return null;
-    const handleAuthSubmit = (e) => {
-        e.preventDefault();
-        if (!formData.email || !formData.password || (isRegister && !formData.name)) {
-            alert(lang === 'ar' ? 'يرجى ملء جميع البيانات' : 'Please fill all fields');
-            return;
-        }
-        onLogin({
-            name: isRegister ? formData.name : (lang === 'ar' ? 'عميل Mora scent' : 'Mora scent Customer'),
-            email: formData.email,
-            picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.email}`
-        });
-        setFormData({ name: '', email: '', password: '' });
-    };
-    const userOrders = orders.filter(o => o.customer.email === user?.email || o.customer.name === user?.name);
-    return (<div className="fixed inset-0 z-[60] flex justify-start">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-slide-in-left">
-        <div className="p-5 border-b flex justify-between items-center bg-[#1a1a1a] text-white">
-          <h2 className="text-xl font-serif font-bold">
-            {user
-            ? (lang === 'ar' ? 'حسابي' : 'My Account')
-            : (isRegister ? (lang === 'ar' ? 'إنشاء حساب' : 'Create Account') : (lang === 'ar' ? 'تسجيل الدخول' : 'Login'))}
-          </h2>
-          <button onClick={onClose}><X /></button>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-8">
-          {user ? (<div className="space-y-8">
-              <div className="text-center">
-                <div className="relative inline-block">
-                  <img src={user.picture} alt={user.name} className="w-24 h-24 rounded-full border-4 border-[#D4AF37] mx-auto shadow-lg"/>
-                  <div className="absolute bottom-0 right-0 bg-emerald-500 w-6 h-6 rounded-full border-4 border-white"></div>
-                </div>
-                <h3 className="text-2xl font-serif font-bold mt-4">{user.name}</h3>
-                <p className="text-neutral-400 text-sm">{user.email}</p>
-                <button onClick={onLogout} className="mt-4 text-red-500 text-sm font-bold hover:underline">
-                  {lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
-                </button>
-              </div>
+	const [isRegister, setIsRegister] = useState(false);
+	const [formData, setFormData] = useState({ name: '', email: '', password: '' });
 
-              <div className="space-y-4">
-                <h4 className="font-bold flex items-center gap-2 text-neutral-800 border-b pb-2">
-                  <Bell size={18} className="text-[#D4AF37]"/>
-                  {lang === 'ar' ? 'إشعارات الطلبات' : 'Order Notifications'}
-                </h4>
-                
-                {userOrders.length === 0 ? (<div className="text-center py-10 bg-neutral-50 rounded-2xl border border-dashed border-neutral-200">
-                    <Package size={32} className="mx-auto text-neutral-300 mb-2"/>
-                    <p className="text-xs text-neutral-400">
-                      {lang === 'ar' ? 'لا توجد طلبات نشطة حالياً' : 'No active orders currently'}
-                    </p>
-                  </div>) : (<div className="space-y-3">
-                    {userOrders.map(order => (<div key={order.id} className="p-4 bg-neutral-50 rounded-2xl border border-neutral-100 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-1 h-full bg-[#D4AF37]"></div>
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-[10px] font-mono font-bold text-neutral-400">#{order.id}</span>
-                          <span className="text-[10px] bg-[#D4AF37]/10 text-[#D4AF37] px-2 py-0.5 rounded-full font-bold">
-                            {order.status}
-                          </span>
-                        </div>
-                        <p className="text-xs font-bold text-neutral-700">
-                          {lang === 'ar' ? `طلبك الآن في مرحلة: ${order.status}` : `Your order is now: ${order.status}`}
-                        </p>
-                        <div className="mt-3 flex items-center gap-2 text-[10px] text-neutral-400">
-                          <CheckCircle2 size={12} className="text-emerald-500"/>
-                          {lang === 'ar' ? 'سيتم تحديثك عند تغيير الحالة' : 'You will be updated on status change'}
-                        </div>
-                      </div>))}
-                  </div>)}
-              </div>
-            </div>) : (<div className="h-full flex flex-col">
-              <div className="text-center mb-10">
-                <div className="w-20 h-20 bg-[#D4AF37]/10 rounded-3xl flex items-center justify-center text-[#D4AF37] mx-auto mb-4">
-                  <LogIn size={40}/>
-                </div>
-                <h3 className="text-2xl font-serif font-bold">
-                  {isRegister ? (lang === 'ar' ? 'انضم إلينا' : 'Join Us') : (lang === 'ar' ? 'مرحباً بك' : 'Welcome')}
-                </h3>
-                <p className="text-sm text-neutral-400 mt-2">
-                  {lang === 'ar' ? 'استمتع بتجربة تسوق فاخرة مع Mora scent' : 'Enjoy a luxury shopping experience with Mora scent'}
-                </p>
-              </div>
+	const handleAuthSubmit = (e) => {
+		e.preventDefault();
+		if (!formData.email || !formData.password || (isRegister && !formData.name)) {
+			alert(lang === 'ar' ? 'يرجى ملء جميع البيانات' : 'Please fill all fields');
+			return;
+		}
+		// In the migrated version, we pass the mode to the handler
+		onLogin({
+			...formData,
+			mode: isRegister ? 'signup' : 'login',
+			picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.email}`,
+		});
+		setFormData({ name: '', email: '', password: '' });
+	};
 
-              <form onSubmit={handleAuthSubmit} className="space-y-5">
-                {isRegister && (<div className="relative">
-                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18}/>
-                    <input type="text" placeholder={lang === 'ar' ? 'الاسم بالكامل' : 'Full Name'} className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none border border-neutral-100 focus:border-[#D4AF37] focus:bg-white transition-all" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })}/>
-                  </div>)}
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18}/>
-                  <input type="email" placeholder={lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'} className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none border border-neutral-100 focus:border-[#D4AF37] focus:bg-white transition-all" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })}/>
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18}/>
-                  <input type="password" placeholder={lang === 'ar' ? 'كلمة المرور' : 'Password'} className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none border border-neutral-100 focus:border-[#D4AF37] focus:bg-white transition-all" value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })}/>
-                </div>
-                
-                <button className="w-full bg-[#1a1a1a] text-white py-5 rounded-2xl font-bold text-lg hover:bg-[#D4AF37] hover:text-black transition-all shadow-xl active:scale-95 transform mt-4">
-                  {isRegister ? (lang === 'ar' ? 'إنشاء حساب' : 'Create Account') : (lang === 'ar' ? 'تسجيل الدخول' : 'Sign In')}
-                </button>
-              </form>
+	const userOrders = orders.filter((o) => o.customer_email === user?.email || o.customer_name === user?.name);
 
-              <div className="mt-auto pt-8 text-center">
-                <p className="text-sm text-neutral-500">
-                  {isRegister
-                ? (lang === 'ar' ? 'لديك حساب بالفعل؟' : 'Already have an account?')
-                : (lang === 'ar' ? 'ليس لديك حساب؟' : 'Don\'t have an account?')}
-                  <button onClick={() => setIsRegister(!isRegister)} className="text-[#D4AF37] font-bold mx-2 hover:underline">
-                    {isRegister ? (lang === 'ar' ? 'تسجيل الدخول' : 'Login') : (lang === 'ar' ? 'انضم إلينا' : 'Join Us')}
-                  </button>
-                </p>
-              </div>
-            </div>)}
-        </div>
-      </div>
-    </div>);
+	return (
+		<Drawer
+			anchor={lang === 'ar' ? 'right' : 'left'}
+			open={isOpen}
+			onClose={onClose}
+			PaperProps={{
+				sx: { width: { xs: '100%', sm: 400 }, display: 'flex', flexDirection: 'column' },
+			}}
+		>
+			{/* Header */}
+			<Box sx={{ p: 2.5, bgcolor: 'secondary.main', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+				<Typography variant='h6' sx={{ fontWeight: 700 }}>
+					{user ? (lang === 'ar' ? 'حسابي' : 'My Account') : isRegister ? (lang === 'ar' ? 'إنشاء حساب' : 'Create Account') : lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
+				</Typography>
+				<IconButton onClick={onClose} sx={{ color: 'white' }}>
+					<CloseIcon />
+				</IconButton>
+			</Box>
+
+			<Box sx={{ flexGrow: 1, overflowY: 'auto', p: 4 }}>
+				{user ? (
+					<Stack spacing={4}>
+						{/* Profile Info */}
+						<Box sx={{ textAlign: 'center' }}>
+							<Box sx={{ position: 'relative', display: 'inline-block' }}>
+								<Avatar
+									src={user.picture}
+									alt={user.name}
+									sx={{ width: 96, height: 96, border: 4, borderColor: 'primary.main', mb: 2, boxShadow: 3 }}
+								/>
+								<Box sx={{ position: 'absolute', bottom: 16, right: 0, width: 24, height: 24, bgcolor: 'success.main', border: 4, borderColor: 'background.paper', borderRadius: '50%' }} />
+							</Box>
+							<Typography variant='h5' sx={{ fontWeight: 700 }}>
+								{user.name}
+							</Typography>
+							<Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+								{user.email}
+							</Typography>
+							<Button color='error' onClick={onLogout} sx={{ fontWeight: 700, textTransform: 'none' }}>
+								{lang === 'ar' ? 'تسجيل الخروج' : 'Logout'}
+							</Button>
+						</Box>
+
+						{/* Order Notifications */}
+						<Box>
+							<Typography variant='subtitle1' sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, mb: 2, borderBottom: 1, borderColor: 'divider', pb: 1 }}>
+								<NotificationsIcon sx={{ fontSize: 18, color: '#D4AF37' }} />
+								{lang === 'ar' ? 'إشعارات الطلبات' : 'Order Notifications'}
+							</Typography>
+
+							{userOrders.length === 0 ? (
+								<Paper variant='outlined' sx={{ p: 4, textAlign: 'center', bgcolor: 'background.default', borderStyle: 'dashed' }}>
+									<InventoryIcon sx={{ fontSize: 32, margin: '0 auto 8px', opacity: 0.3, display: 'block' }} />
+									<Typography variant='caption' color='text.secondary'>
+										{lang === 'ar' ? 'لا توجد طلبات نشطة حالياً' : 'No active orders currently'}
+									</Typography>
+								</Paper>
+							) : (
+								<Stack spacing={2}>
+									{userOrders.map((order) => (
+										<Paper key={order.id} sx={{ p: 2, position: 'relative', overflow: 'hidden', borderLeft: 4, borderColor: 'primary.main' }}>
+											<Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ mb: 1 }}>
+												<Typography variant='caption' color='text.secondary' fontWeight='bold'>
+													#{order.id}
+												</Typography>
+												<Typography variant='caption' sx={{ bgcolor: 'primary.main', px: 1, py: 0.25, borderRadius: 10, fontWeight: 'bold' }}>
+													{order.status}
+												</Typography>
+											</Stack>
+											<Typography variant='body2' fontWeight='bold' sx={{ mb: 1 }}>
+												{lang === 'ar' ? `طلبك الآن في مرحلة: ${order.status}` : `Your order is now: ${order.status}`}
+											</Typography>
+											<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+												<CheckCircleIcon sx={{ fontSize: 12, color: '#10b981' }} />
+												<Typography variant='caption' color='text.secondary'>
+													{lang === 'ar' ? 'سيتم تحديثك عند تغيير الحالة' : 'You will be updated on status change'}
+												</Typography>
+											</Box>
+										</Paper>
+									))}
+								</Stack>
+							)}
+						</Box>
+					</Stack>
+				) : (
+					/* Auth Forms */
+					<Box component='form' onSubmit={handleAuthSubmit} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+						<Box sx={{ textAlign: 'center', mb: 5 }}>
+							<Avatar sx={{ width: 80, height: 80, bgcolor: 'rgba(212, 175, 55, 0.1)', color: 'primary.main', mx: 'auto', mb: 2 }}>
+								<LoginIcon sx={{ fontSize: 40 }} />
+							</Avatar>
+							<Typography variant='h5' sx={{ fontWeight: 700, mb: 1 }}>
+								{isRegister ? (lang === 'ar' ? 'انضم إلينا' : 'Join Us') : lang === 'ar' ? 'مرحباً بك' : 'Welcome'}
+							</Typography>
+							<Typography variant='body2' color='text.secondary'>
+								{lang === 'ar' ? 'استمتع بتجربة تسوق فاخرة مع Mora scent' : 'Enjoy a luxury shopping experience with Mora scent'}
+							</Typography>
+						</Box>
+
+						<Stack spacing={2.5}>
+							{isRegister && (
+								<TextField
+									fullWidth
+									placeholder={lang === 'ar' ? 'الاسم بالكامل' : 'Full Name'}
+									value={formData.name}
+									onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position='start'>
+												<PersonIcon sx={{ fontSize: 18, color: '#999' }} />
+											</InputAdornment>
+										),
+									}}
+									sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4, bgcolor: 'background.default' } }}
+								/>
+							)}
+							<TextField
+								fullWidth
+								type='email'
+								placeholder={lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
+								value={formData.email}
+								onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position='start'>
+											<MailIcon sx={{ fontSize: 18, color: '#999' }} />
+										</InputAdornment>
+									),
+								}}
+								sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4, bgcolor: 'background.default' } }}
+							/>
+							<TextField
+								fullWidth
+								type='password'
+								placeholder={lang === 'ar' ? 'كلمة المرور' : 'Password'}
+								value={formData.password}
+								onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position='start'>
+											<LockIcon sx={{ fontSize: 18, color: '#999' }} />
+										</InputAdornment>
+									),
+								}}
+								sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4, bgcolor: 'background.default' } }}
+							/>
+
+							<Button
+								fullWidth
+								type='submit'
+								variant='contained'
+								color='secondary'
+								size='large'
+								sx={{ py: 2, borderRadius: 4, fontSize: '1.1rem', fontWeight: 700, mt: 2, boxShadow: 4, '&:hover': { bgcolor: 'primary.main', color: 'black' } }}
+							>
+								{isRegister ? (lang === 'ar' ? 'إنشاء حساب' : 'Create Account') : lang === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
+							</Button>
+						</Stack>
+
+						<Box sx={{ mt: 'auto', pt: 4, textAlign: 'center' }}>
+							<Typography variant='body2' color='text.secondary'>
+								{isRegister ? (lang === 'ar' ? 'لديك حساب بالفعل؟' : 'Already have an account?') : lang === 'ar' ? 'ليس لديك حساب؟' : "Don't have an account?"}
+								<Button onClick={() => setIsRegister(!isRegister)} sx={{ color: 'primary.main', fontWeight: 800, mx: 1, textTransform: 'none', '&:hover': { textDecoration: 'underline' } }}>
+									{isRegister ? (lang === 'ar' ? 'تسجيل الدخول' : 'Login') : lang === 'ar' ? 'انضم إلينا' : 'Join Us'}
+								</Button>
+							</Typography>
+						</Box>
+					</Box>
+				)}
+			</Box>
+		</Drawer>
+	);
 };
+
 export default LoginDrawer;
