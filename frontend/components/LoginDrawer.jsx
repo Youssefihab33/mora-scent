@@ -48,7 +48,7 @@ const LoginDrawer = ({ isOpen, onClose, lang, user, onLogin, onLogout, orders })
 				<Typography variant='h6' sx={{ fontWeight: 700 }}>
 					{user ? (lang === 'ar' ? 'حسابي' : 'My Account') : isRegister ? (lang === 'ar' ? 'إنشاء حساب' : 'Create Account') : lang === 'ar' ? 'تسجيل الدخول' : 'Login'}
 				</Typography>
-				<IconButton onClick={onClose} sx={{ color: 'white' }}>
+				<IconButton onClick={onClose} sx={{ color: 'white' }} aria-label="close">
 					<CloseIcon />
 				</IconButton>
 			</Box>
@@ -152,14 +152,14 @@ const LoginDrawer = ({ isOpen, onClose, lang, user, onLogin, onLogout, orders })
 							)}
 							<TextField
 								fullWidth
-								type='email'
-								placeholder={lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address'}
+								type={isRegister ? 'email' : 'text'}
+								placeholder={isRegister ? (lang === 'ar' ? 'البريد الإلكتروني' : 'Email Address') : (lang === 'ar' ? 'البريد الإلكتروني أو اسم المستخدم' : 'Email or Username')}
 								value={formData.email}
 								onChange={(e) => setFormData({ ...formData, email: e.target.value })}
 								InputProps={{
 									startAdornment: (
 										<InputAdornment position='start'>
-											<MailIcon sx={{ fontSize: 18, color: '#999' }} />
+											{isRegister ? <MailIcon sx={{ fontSize: 18, color: '#999' }} /> : <PersonIcon sx={{ fontSize: 18, color: '#999' }} />}
 										</InputAdornment>
 									),
 								}}
