@@ -149,20 +149,15 @@ const App = () => {
 	 * @param {Object} product - The product object to add.
 	 */
 	const addToCart = (product) => {
-		console.log('addToCart called with:', product.id);
 		setCart((prev) => {
 			const currentCart = Array.isArray(prev) ? prev : [];
 			const existingIndex = currentCart.findIndex((item) => String(item.id) === String(product.id));
 			if (existingIndex !== -1) {
-				const newCart = currentCart.map((item, idx) =>
+				return currentCart.map((item, idx) =>
 					idx === existingIndex ? { ...item, quantity: (item.quantity || 0) + 1 } : item
 				);
-				console.log('addToCart: Updated quantity', JSON.stringify(newCart));
-				return newCart;
 			}
-			const newCart = [...currentCart, { ...product, quantity: 1 }];
-			console.log('addToCart: Added new item', JSON.stringify(newCart));
-			return newCart;
+			return [...currentCart, { ...product, quantity: 1 }];
 		});
 		setIsCartOpen(true);
 	};
@@ -173,19 +168,15 @@ const App = () => {
 	 * @param {number} delta - The amount to change the quantity by.
 	 */
 	const updateQuantity = (id, delta) => {
-		console.log(`updateQuantity: id=${id}, delta=${delta}`);
 		setCart((prev) => {
 			const currentCart = Array.isArray(prev) ? prev : [];
-			const newCart = currentCart.map((item) => {
+			return currentCart.map((item) => {
 				if (String(item.id) === String(id)) {
 					const newQty = Math.max(1, (item.quantity || 0) + delta);
-					console.log(`updateQuantity: Match found! New qty: ${newQty}`);
 					return { ...item, quantity: newQty };
 				}
 				return item;
 			});
-			console.log('updateQuantity: Resulting cart', JSON.stringify(newCart));
-			return newCart;
 		});
 	};
 
@@ -194,12 +185,9 @@ const App = () => {
 	 * @param {string|number} id - The ID of the item to remove.
 	 */
 	const removeFromCart = (id) => {
-		console.log('removeFromCart: id=', id);
 		setCart((prev) => {
 			const currentCart = Array.isArray(prev) ? prev : [];
-			const newCart = currentCart.filter((item) => String(item.id) !== String(id));
-			console.log('removeFromCart: Resulting cart', JSON.stringify(newCart));
-			return newCart;
+			return currentCart.filter((item) => String(item.id) !== String(id));
 		});
 	};
 
