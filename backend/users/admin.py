@@ -15,10 +15,10 @@ class CustomerAdmin(UserAdmin):
         (
             "Main information",
             {
-                "fields": ['nationality', 'nickname', 'profile_picture'],
+                "fields": ['nationality', 'profile_picture'],
             },
         ),
     ) + UserAdmin.fieldsets
-    search_fields = ('username', 'email', 'nickname')
+    search_fields = ('username', 'email')
     ordering = ('username',)
 admin.site.register(CustomUser, CustomerAdmin)

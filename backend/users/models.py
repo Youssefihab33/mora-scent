@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 
-from .storage import OverwriteStorage, File_Rename
+from core.storage import OverwriteStorage, File_Rename
 from api.models import Country, Product
 
 class CustomUserManager(BaseUserManager):
@@ -27,7 +27,7 @@ class CustomUser(AbstractUser):
     phone = models.CharField(max_length=20, unique=True)
     nationality = models.ForeignKey(Country, on_delete=models.CASCADE, blank=True, null=True)
     profile_picture = models.ImageField(upload_to=File_Rename(
-        'users/profile_picture/'), storage=OverwriteStorage(), blank=True, null=True)
+        'users/profile-pictures/', 'username'), storage=OverwriteStorage(), blank=True, null=True)
     orderCount = models.IntegerField(default=0)
     totalSpent = models.DecimalField(
         max_digits=12, decimal_places=2, default=0)

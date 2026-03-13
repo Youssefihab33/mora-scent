@@ -1,5 +1,5 @@
 from django.db import models
-
+from core.storage import File_Rename, OverwriteStorage
 
 class Category(models.Model):
     nameAr = models.CharField(max_length=100)
@@ -21,7 +21,7 @@ class Product(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name='products')
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField()
+    image = models.ImageField(upload_to=File_Rename('products/', 'nameEn'), storage=OverwriteStorage(), blank=True, null=True)
     descriptionAr = models.TextField()
     descriptionEn = models.TextField()
     stock = models.IntegerField(default=0)

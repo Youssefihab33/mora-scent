@@ -8,6 +8,8 @@ dist-ssr
 .venv/
 __pycache__/
 migrations/
+media/
+static/
 seed_data.py
 db.sqlite3
 
