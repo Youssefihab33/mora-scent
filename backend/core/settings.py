@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-cqq)mcj(x&3jlc$6q@sfh&888&)@qt(t(zvbe)*7ax8#nxgc_6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['localhost', '192.168.1.101', 'simsy.redirectme.net']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "knox",
     "api",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -94,6 +95,8 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
+AUTH_USER_MODEL = "users.CustomUser"
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -125,4 +128,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = 'static/'
+MEDIA_URL = 'media/'

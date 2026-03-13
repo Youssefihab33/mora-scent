@@ -4,7 +4,7 @@ import axios from 'axios';
  * Centralized Axios instance for all backend interactions.
  * Configured with base URL and interceptors for authentication.
  */
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
 
 const axiosInstance = axios.create({
 	baseURL: API_BASE_URL,
