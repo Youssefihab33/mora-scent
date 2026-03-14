@@ -118,6 +118,9 @@ const App = () => {
 			let userData;
 			if (credentials.mode === 'signup') {
 				const [first_name, ...last_name_parts] = credentials.name.split(' ');
+				// Use a derived username if not provided, or just the email for now
+				// But since we want separate username/email, we should probably allow choosing one.
+				// For simplicity in the existing UI, we'll use email as username but we ensured the limit is high.
 				userData = await api.register({
 					username: credentials.email,
 					email: credentials.email,
@@ -126,6 +129,7 @@ const App = () => {
 					last_name: last_name_parts.join(' '),
 				});
 			} else {
+				// credentials.email here might be username or email
 				userData = await api.login(credentials.email, credentials.password);
 			}
 			setUser(userData);
@@ -152,18 +156,53 @@ const App = () => {
 		}
 	};
 
-	// Cart Operations
+	/**
+	 * Adds a product to the cart.
+	 * If the product already exists, increments its quantity.
+	 * @param {Object} product - The product object to add.
+	 */
 	const addToCart = (product) => {
 		setCart((prev) => {
-			const existing = prev.find((item) => item.id === product.id);
-			if (existing) return prev.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
-			return [...prev, { ...product, quantity: 1 }];
+			const currentCart = Array.isArray(prev) ? prev : [];
+			const existingIndex = currentCart.findIndex((item) => String(item.id) === String(product.id));
+			if (existingIndex !== -1) {
+				return currentCart.map((item, idx) =>
+					idx === existingIndex ? { ...item, quantity: (item.quantity || 0) + 1 } : item
+				);
+			}
+			return [...currentCart, { ...product, quantity: 1 }];
 		});
 		setIsCartOpen(true);
 	};
 
-	const updateQuantity = (id, delta) => setCart((prev) => prev.map((item) => (item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item)));
-	const removeFromCart = (id) => setCart((prev) => prev.filter((item) => item.id !== id));
+	/**
+	 * Updates the quantity of an item in the cart.
+	 * @param {string|number} id - The ID of the item to update.
+	 * @param {number} delta - The amount to change the quantity by.
+	 */
+	const updateQuantity = (id, delta) => {
+		setCart((prev) => {
+			const currentCart = Array.isArray(prev) ? prev : [];
+			return currentCart.map((item) => {
+				if (String(item.id) === String(id)) {
+					const newQty = Math.max(1, (item.quantity || 0) + delta);
+					return { ...item, quantity: newQty };
+				}
+				return item;
+			});
+		});
+	};
+
+	/**
+	 * Removes an item from the cart.
+	 * @param {string|number} id - The ID of the item to remove.
+	 */
+	const removeFromCart = (id) => {
+		setCart((prev) => {
+			const currentCart = Array.isArray(prev) ? prev : [];
+			return currentCart.filter((item) => String(item.id) !== String(id));
+		});
+	};
 
 	// Filtered Products based on search and category
 	const filteredProducts = useMemo(() => {
@@ -175,7 +214,9 @@ const App = () => {
 		});
 	}, [products, activeCategory, searchQuery, lang]);
 
-	const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+	const cartTotal = useMemo(() => {
+		return (cart || []).reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0);
+	}, [cart]);
 
 	// Order & Review Handling
 	const handleAddReview = async (reviewData) => {
@@ -235,7 +276,7 @@ const App = () => {
 				<Header
 					lang={lang}
 					setLang={setLang}
-					cartCount={cart.reduce((a, b) => a + (b.quantity || 0), 0)}
+					cartCount={(cart || []).reduce((a, b) => a + (Number(b.quantity) || 0), 0)}
 					isSearchOpen={isSearchOpen}
 					setIsSearchOpen={setIsSearchOpen}
 					searchQuery={searchQuery}
