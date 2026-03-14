@@ -70,16 +70,14 @@ const CartDrawer = ({ isOpen, onClose, cart, lang, updateQuantity, removeFromCar
 									<Avatar variant='rounded' src={item.image} alt={item.name} sx={{ width: 80, height: 80, borderRadius: 2 }} />
 								</ListItemAvatar>
 								<ListItemText
-									primaryTypographyProps={{ component: 'div' }}
 									primary={
-										<Typography variant='subtitle1' component='div' sx={{ fontWeight: 700, mb: 0.5 }}>
+										<Typography variant='subtitle1' sx={{ fontWeight: 700, mb: 0.5 }}>
 											{lang === 'ar' ? item.name : item.nameEn}
 										</Typography>
 									}
-									secondaryTypographyProps={{ component: 'div' }}
 									secondary={
-										<Box component='div'>
-											<Typography variant='body2' component='div' color='primary' sx={{ fontWeight: 800, mb: 1.5 }}>
+										<Box component='span'>
+											<Typography variant='body2' color='primary' sx={{ fontWeight: 800, mb: 1.5 }}>
 												{item.price} {currency}
 											</Typography>
 											<Stack direction='row' alignItems='center' spacing={1.5}>
@@ -90,7 +88,7 @@ const CartDrawer = ({ isOpen, onClose, cart, lang, updateQuantity, removeFromCar
 												>
 													<RemoveIcon sx={{ fontSize: 14 }} />
 												</IconButton>
-												<Typography variant='body2' component='span' data-testid="item-quantity" sx={{ fontWeight: 700, minWidth: 20, textAlign: 'center' }}>
+												<Typography variant='body2' sx={{ fontWeight: 700, minWidth: 20, textAlign: 'center' }}>
 													{item.quantity}
 												</Typography>
 												<IconButton

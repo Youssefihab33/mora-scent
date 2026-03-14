@@ -103,19 +103,11 @@ class LoginAPI(KnoxLoginView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
-        # Using a custom serializer to handle both email and username
-        data = request.data
-        username = data.get('username')
-        password = data.get('password')
-
-        from django.contrib.auth import authenticate
-        user = authenticate(request, username=username, password=password)
-
-        if user:
-            login(request, user)
-            return super(LoginAPI, self).post(request, format=None)
-        else:
-            return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = AuthTokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return super(LoginAPI, self).post(request, format=None)
 
 
 class UserAPI(generics.RetrieveAPIView):

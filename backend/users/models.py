@@ -22,9 +22,9 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
-    username = models.CharField(max_length=150, unique=True)
+    username = models.CharField(max_length=20, unique=True)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
+    phone = models.CharField(max_length=20, unique=True)
     nationality = models.ForeignKey(Country, on_delete=models.CASCADE, blank=True, null=True)
     profile_picture = models.ImageField(upload_to=File_Rename(
         'users/profile-pictures/', 'username'), storage=OverwriteStorage(), blank=True, null=True)
