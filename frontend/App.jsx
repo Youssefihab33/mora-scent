@@ -28,7 +28,15 @@ const App = () => {
 	const [view, setView] = useState('store');
 	const [products, setProducts] = useState([]);
 	const [categories, setCategories] = useState([]);
-	const [cart, setCart] = useLocalStorage('mora-scent-cart', []);
+	const [cart, setCart] = useState(() => {
+		try {
+			const saved = localStorage.getItem('mora-scent-cart');
+			return saved ? JSON.parse(saved) : [];
+		} catch (error) {
+			console.error('Error loading cart from localStorage:', error);
+			return [];
+		}
+	});
 	const [isCartOpen, setIsCartOpen] = useState(false);
 	const [isLoginOpen, setIsLoginOpen] = useState(false);
 	const [activeCategory, setActiveCategory] = useState('الكل');
@@ -61,6 +69,11 @@ const App = () => {
 		document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 		document.documentElement.lang = lang;
 	}, [lang]);
+
+	// Sync cart to localStorage
+	useEffect(() => {
+		localStorage.setItem('mora-scent-cart', JSON.stringify(cart));
+	}, [cart]);
 
 	// Fetch initial data using react-use's useAsync
 	const initialData = useAsync(async () => {
